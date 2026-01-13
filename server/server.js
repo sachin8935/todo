@@ -12,6 +12,9 @@ const todoRoutes = require('./routes/todos');
 
 const app = express();
 
+// Trust proxy when behind reverse proxy (for Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Security Middleware
 app.use(helmet());
 app.use(cors({
@@ -49,6 +52,19 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
+
+// Base API route
+app.get('/api', (req, res) => {
+  res.status(200).json({ 
+    message: 'Banking API is running',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      todos: '/api/todos',
+      health: '/api/health'
+    }
+  });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
