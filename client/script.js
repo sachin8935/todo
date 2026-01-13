@@ -1,4 +1,7 @@
-const API = 'https://todo-5bpy.onrender.com/api';
+// API Configuration - Use environment variable or fallback to your Render URL
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api'  // Local development
+  : 'https://todo-5bpy.onrender.com/api'; // Production
 let token = localStorage.getItem('token');
 let todos = [];
 

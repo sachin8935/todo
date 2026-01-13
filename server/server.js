@@ -17,12 +17,39 @@ app.set('trust proxy', 1);
 
 // Security Middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CLIENT_URL 
-    : ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500', 'null'],
-  credentials: true
-}));
+
+// CORS Configuration for production deployment
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:5500',
+      'http://localhost:5500',
+      process.env.CLIENT_URL,
+      process.env.VERCEL_URL,
+      // Add common patterns for Vercel and Netlify
+    ];
+    
+    // Allow Vercel and Netlify domains
+    if (origin.includes('.vercel.app') || 
+        origin.includes('.netlify.app') || 
+        origin.includes('.herokuapp.com') ||
+        allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
