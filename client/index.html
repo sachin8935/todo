@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TaskFlow - A beautiful, modern todo list application to organize your life">
+    <title>TaskFlow - Smart Todo List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader">
+            <div class="loader-circle"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Auth Pages -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-background">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+            <div class="floating-shape shape-4"></div>
+        </div>
+        
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-check-double"></i>
+                    <span>TaskFlow</span>
+                </div>
+                <p class="auth-subtitle">Organize your life, one task at a time</p>
+            </div>
+
+            <!-- Login Form -->
+            <form class="auth-form" id="loginForm">
+                <h2>Welcome Back!</h2>
+                <p class="form-subtitle">Sign in to access your tasks</p>
+                
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email address" required autocomplete="email">
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" tabindex="-1">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>Sign In</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" id="showSignup">Create one</a>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form class="auth-form hidden" id="signupForm">
+                <h2>Create Account</h2>
+                <p class="form-subtitle">Start organizing your tasks today</p>
+                
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupUsername" placeholder="Username" required minlength="3" maxlength="30" autocomplete="username">
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="Email address" required autocomplete="email">
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password">
+                    <button type="button" class="toggle-password" tabindex="-1">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirm password" required autocomplete="new-password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>Create Account</span>
+                    <i class="fas fa-rocket"></i>
+                </button>
+                
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" id="showLogin">Sign in</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container hidden" id="appContainer">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-check-double"></i>
+                    <span>TaskFlow</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="user-profile" id="userProfile">
+                <div class="user-avatar" id="userAvatar">
+                    <span id="userInitial">U</span>
+                </div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">User</span>
+                    <span class="user-email" id="userEmail">user@example.com</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Tasks</span>
+                    <ul class="nav-list">
+                        <li class="nav-item active" data-filter="all">
+                            <i class="fas fa-inbox"></i>
+                            <span>All Tasks</span>
+                            <span class="badge" id="allCount">0</span>
+                        </li>
+                        <li class="nav-item" data-filter="pending">
+                            <i class="fas fa-clock"></i>
+                            <span>Pending</span>
+                            <span class="badge" id="pendingCount">0</span>
+                        </li>
+                        <li class="nav-item" data-filter="completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Completed</span>
+                            <span class="badge success" id="completedCount">0</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-ghost" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <h1 id="pageTitle">All Tasks</h1>
+                        <span class="date" id="currentDate"></span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="addTaskBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Task</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statTotal">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statCompleted">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statPending">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Todo List -->
+            <section class="todo-section">
+                <div class="todo-list" id="todoList">
+                    <!-- Todos will be rendered here -->
+                </div>
+
+                <div class="empty-state hidden" id="emptyState">
+                    <div class="empty-illustration">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>No tasks yet</h3>
+                    <p>Add your first task to get started!</p>
+                    <button class="btn btn-primary" id="emptyAddBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Task</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Completed Actions -->
+            <div class="completed-actions hidden" id="completedActions">
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Todo Modal -->
+    <div class="modal-overlay hidden" id="todoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Task</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="modal-body" id="todoForm">
+                <input type="hidden" id="todoId">
+                
+                <div class="form-group">
+                    <label for="todoTitle">Task Title *</label>
+                    <input type="text" id="todoTitle" placeholder="What needs to be done?" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="todoPriority">Priority</label>
+                    <select id="todoPriority">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" id="cancelModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveTodoBtn">
+                        <i class="fas fa-check"></i>
+                        <span>Save Task</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay hidden" id="confirmModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmOk">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
